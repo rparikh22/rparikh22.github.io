@@ -1,0 +1,181 @@
+<html> 
+<head>
+<title> Glow Ball</title>
+<body>
+<p> Instructions: Try your best make sure you prevent the ball from passing you. The opposing bar will try to hit the
+ball so that you miss it. You have to try to make the ball pass your opponent. If the opponent gets 20 you lose.
+But if you get 100 first, YOU WIN!</p>
+
+<canvas id= "gameCanvas" width= "800" height="600" ></ canvas>itle>"Play Ball"</title>
+
+
+
+
+<script>
+
+//set up canvas
+var canvas;
+var canvasContext;
+//set up ball coordinates and speed control
+var ballX= 50;
+var ballY= 50;
+var ballSpeedX= 18;
+var ballSpeedY= 7;
+
+var radius= 4;
+
+//set up scoring variables
+var player1Score= 0;
+var player2Score= 0;
+
+//set up paddle dimensions and position
+var paddle1Y= 250;
+var paddle2Y= 250;
+const PADDLE_THICKNESS= 20;
+const PADDLE_HEIGHT= 70;
+
+
+
+
+
+///calculate Mouse Position
+function calculateMousePos(evt){
+  var rect= canvas.getBoundingClientRect();
+  var root= document.documentElement;
+  var mouseX= evt.clientX - rect.left - root.scrollLeft;
+  var mouseY= evt.clientY - rect.top - root.scrollTop;
+  return{
+    x: mouseX,
+    y: mouseY
+  };
+}
+
+window.onload= function(){
+  canvas= document.getElementById('gameCanvas');
+  canvasContext= canvas.getContext('2d');
+  
+  var framesPerSecond= 50;
+  setInterval(callEverything, 1000/framesPerSecond);
+  
+  canvas.addEventListener('mousemove',
+    function(evt){
+      var mousePos= calculateMousePos(evt);
+      paddle1Y= mousePos.y - (PADDLE_HEIGHT/2);
+    });
+}
+
+//insert ball if it hits the wall
+function ballReset() {
+   ballSpeedX= -ballSpeedX;
+   ballX = canvas.width/2;
+   ballY = canvas.height/2;
+}
+
+//computer moves the "computer" paddle
+function computerMovement(){
+  var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+  if(paddle2YCenter< ballY - 35) {
+     paddle2Y= paddle2Y + 6;
+  } else if(paddle2YCenter > ballY + 35){
+     paddle2Y= paddle2Y - 6;
+  }
+}
+
+function callEverything() {
+  moveEverything();
+  drawEverything();
+  }
+  
+function moveEverything() {
+  computerMovement();
+  
+  if(ballX < 0) {
+     if(ballY > paddle1Y &&ballY < paddle1Y+ PADDLE_HEIGHT) 
+      {
+        ballSpeedX = -ballSpeedX;
+      }else{
+        ballReset();
+        player2Score++;
+      }
+        if (player2Score > 20)
+    {
+      background(0);
+      textSize(180);
+      text("You lose!", 15, 400);
+    }
+   }
+   if(ballX > canvas.width) {
+      if(ballY > paddle2Y && ballY < paddle2Y+ PADDLE_HEIGHT) {
+        ballSpeedX= -ballSpeedX;
+      }
+      else
+      {
+        ballReset();
+        player1Score++;
+      }
+    }
+    if(ballY<0){
+       ballSpeedY = -ballSpeedY;
+    }
+    if(ballY> canvas.height){
+       ballSpeedY = -ballSpeedY;
+    }
+    
+    ballX= ballX + ballSpeedX;
+    ballY= ballY + ballSpeedY;
+}
+
+
+
+
+function drawEverything(){
+  //next line blanks out the screen with black
+  canvasContext.fillStyle = 'black';
+  canvasContext.fillRect(0,0,canvas.width,canvas.height);
+  
+  // this is left player paddle
+  canvasContext.fillStyle = 'red';
+  canvasContext.fillRect(0,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT);
+  
+  // this is right computer paddle
+  canvasContext.fillStyle = 'red';
+  canvasContext.fillRect(canvas.width-PADDLE_THICKNESS,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT);
+  
+  // next line draws the ball
+  canvasContext.fillStyle = 'blue';
+  canvasContext.beginPath();
+  canvasContext.arc(ballX,ballY, radius, 0,Math.PI*2,true);
+  canvasContext.fill();
+  
+  canvasContext.font= "bold 25px Matura MT Script Capitals";
+  canvasContext.fillText(player1Score, 100, 100);
+  canvasContext.fillText(player2Score, canvas.width-100, 100);
+  
+  if (player2Score > 20)
+  {
+  canvasContext.fillStyle = 'red';
+  canvasContext.font= "bold 25px Matura MT Script Capitals";
+  canvasContext.fillText("You Lose!!!", 350, 100);
+  }
+
+ if (player1Score > 100)
+  {
+  canvasContext.fillStyle = 'blue';
+  canvasContext.font= "bold 25px Matura MT Script Capitals";
+  canvasContext.fillText("You Win!!!", 350, 100);
+  }
+
+
+
+}
+
+
+
+
+</script>
+
+</html>
+
+
+
+
